@@ -1,0 +1,4 @@
+coinbase-advanced-py==1.8.2
+redis==4.6.0
+snowflake-connector-python==3.9.0
+python-dotenv==1.0.1

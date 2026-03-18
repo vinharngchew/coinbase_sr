@@ -1,0 +1,52 @@
+services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: coinbase_eod_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: coinbase_eod_pipeline
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PRODUCT_IDS
+      - CHANNELS
+      - COINBASE_API_JSON_FP
+      - SNAPSHOT_INTERVAL
+      - SNAPSHOT_TTL_HOURS
+      - EOD_HOUR
+      - EOD_MINUTE
+      - EOD_TZ
+      - EOD_PRICE_STALE_THRESHOLD_MINUTES
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB
+      - SNOWFLAKE_ACCOUNT
+      - SNOWFLAKE_USER
+      - SNOWFLAKE_PASSWORD
+      - SNOWFLAKE_DATABASE
+      - SNOWFLAKE_SCHEMA
+      - SNOWFLAKE_WAREHOUSE
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  redis_data:
+    driver: local
