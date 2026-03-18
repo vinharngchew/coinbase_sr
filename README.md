@@ -103,7 +103,7 @@ and a minimal replayable source for the EOD writer.
 ## Project Structure
 
 ```
-coinbase-sr/
+coinbase_sr/
 ├── docker-compose.yml            Redis + pipeline services
 ├── Dockerfile                    Python 3.9 container
 ├── requirements.txt
